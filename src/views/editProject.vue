@@ -1,0 +1,62 @@
+<template>
+  <form @submit.prevent="editProject">
+       <h3>Edit Project</h3>
+      <label>Title</label>
+      <input type="text" v-model="title">
+      <label>Detail</label>
+      <input type="text" v-model="detail">
+      <button>Edit</button>
+  </form>
+</template>
+
+<script>
+export default {
+    props: ["id"],
+    data() {
+        return{
+            title:"",
+            detail:""
+        }
+    },
+    methods: {
+        editProject(){
+            fetch("http://localhost:3000/projects/" + this.id,{
+                method: "PATCH",
+                headers: {
+                    "content-type":"application/json"
+                },
+                body:JSON.stringify(
+                    {
+                        title : this.title,
+                        detail : this.detail,
+                    }
+                )
+            })
+            .then(()=>{
+                this.$router.push("/")
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        }
+    },
+    mounted() {
+        fetch("http://localhost:3000/projects/" + this.id)
+            .then((res)=>{
+                return res.json();
+                
+            })
+            .then((data)=>{
+                this.title = data.title;
+                this.detail = data.detail;
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+    }
+}
+</script>
+
+<style>
+
+</style>
