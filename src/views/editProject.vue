@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="editProject" v-if="title !==''">
+  <form @submit.prevent="editProject" v-if="datas !=='' ">
        <h3>Edit Project</h3>
       <label>Title</label>
       <input type="text" v-model="title">
@@ -20,7 +20,8 @@ export default {
     data() {
         return{
             title:"",
-            detail:""
+            detail:"",
+            datas:"",
         }
     },
     methods: {
@@ -43,15 +44,20 @@ export default {
             // .catch((err) => {
             //     console.log(err);
             // })
-             try{
+            if(this.title !== "" && this.detail !== ""){
+                 try{
                 const source = doc(db, "todolist", this.id);
-               await updateDoc(source, {
-                   title : this.title,
-                   detail : this.detail,
-                });
-                 this.$router.push("/");
-            }catch(err){
-                console.log(err.message);
+                await updateDoc(source, {
+                    title : this.title,
+                    detail : this.detail,
+                    });
+                    this.$router.push("/");
+                }catch(err){
+                    console.log(err.message);
+                }
+            }else{
+                this.title ="Something wrong";
+                return 
             }
         }
     },
@@ -71,9 +77,9 @@ export default {
         const fetchData = async () => {
             const docRef = doc(db, "todolist", this.id);
             const docSnap = await getDoc(docRef);
-            const data = {id:docSnap.id,...docSnap.data()};
-            this.title = data.title;
-            this.detail = data.detail;
+            this.datas = {id:docSnap.id,...docSnap.data()};
+            this.title = this.datas.title;
+            this.detail = this.datas.detail;
         }
         fetchData();
     }
