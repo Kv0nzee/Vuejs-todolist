@@ -21,6 +21,25 @@ body
   text-align: center;
   color: #2c3e50;
 }
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  box-shadow: inset 5px 0 5px #fffa65; 
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #3d3d3d; 
+  border-radius: 10px;
+  transition: 0.5s;
+}
 
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #3d3d3d; 
+}
+.link-active {
+  color: #3d3d3d;
+}
 
 </style>
