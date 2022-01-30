@@ -1,15 +1,20 @@
 <template>
-  <div class="home">
+  <div class="home"
+  v-if="projects.length > 0">
     <Filterbutton @filterValue="current=$event" :current="current"></Filterbutton>
     <div v-for="project in filteredProject" :key="project.id">
       <Singleproject :project="project" @show="showProject" @complete="completeProject" @delete="deleteProject"></Singleproject>
     </div>
   </div>
+  <Spinner v-else></Spinner>
 </template>
 
 <script>
+import Spinner from '../components/Spinner'
 import Filterbutton from '../components/Filterbutton'
 import Singleproject from '../components/Singleproject'
+import { collection, getDocs } from "firebase/firestore";
+import {db} from '../firebase/config';
 // @ is an alias to /src
 
 export default {
@@ -21,6 +26,7 @@ export default {
     }
   },
   components: {
+    Spinner,
     Filterbutton,
     Singleproject,
   },
@@ -59,14 +65,22 @@ export default {
     }
   },  
   mounted(){
-    fetch("http://localhost:3000/projects")
-    .then((response) => {
-            return response.json();
-        }).then((data) =>{
-            this.projects = data;
-        }).catch((err) =>{
-            console.log(err.message);
-        })
+    // fetch("http://localhost:3000/projects")
+    // .then((response) => {
+    //         return response.json();
+    //     }).then((data) =>{
+    //         this.projects = data;
+    //     }).catch((err) =>{
+    //         console.log(err.message);
+    //     })
+    const fetchData = async()=> {
+      const querySnapshot = await getDocs(collection(db, "todolist"));
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      this.projects.push({id:doc.id,...doc.data()});
+    });    
+    }
+    fetchData();
   }
 }
 </script>

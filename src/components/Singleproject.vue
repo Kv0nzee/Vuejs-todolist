@@ -16,71 +16,94 @@
                 </span>
             </div>
         </div>
-        <div class="text" v-if="project.showDetail">{{project.title}}</div>
+        <div class="text" v-if="project.showDetail">{{project.detail}}</div>
       </div>
 </template>
 
 <script>
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import {db} from '../firebase/config';
 export default {
     props: ['project'],
     data() {
         return{
-            api:"http://localhost:3000/projects/"
+            projectID:this.project.id
         }
     },
     methods: {
-        deletProject(){
-             let deleteRoute = this.api+this.project.id;
-            fetch(deleteRoute,{method : "DELETE"})
-            .then(()=> {
-                this.$emit("delete",this.project.id);
-            })
-             .catch((err)=>{
-                console.log(err);
-            })
+        async deletProject(){
+            //  let deleteRoute = this.api+this.project.id;
+            // fetch(deleteRoute,{method : "DELETE"})
+            // .then(()=> {
+            //     this.$emit("delete",this.project.id);
+            // })
+            //  .catch((err)=>{
+            //     console.log(err);
+            // })
+            await deleteDoc(doc(db, "todolist", this.projectID));
+            this.$emit("delete",this.project.id);
         },
-        completePorject(){
-            let completeRoute = this.api+this.project.id;
-            fetch(completeRoute,
-                 {
-                    method:"PATCH",
-                    headers:{
-                        "Content-Type" : "application/json"
-                    },
-                    body:JSON.stringify(
-                        {
-                        complete: !this.project.complete
-                    })
-                }
-             )
-             .then(() => {
+        async completePorject(){
+            // let completeRoute = this.api+this.project.id;
+            // fetch(completeRoute,
+            //      {
+            //         method:"PATCH",
+            //         headers:{
+            //             "Content-Type" : "application/json"
+            //         },
+            //         body:JSON.stringify(
+            //             {
+            //             complete: !this.project.complete
+            //         })
+            //     }
+            //  )
+            //  .then(() => {
+            //      this.$emit("complete",this.project.id);
+            //  })
+            //  .catch((err) => {
+            //      console.log(err);
+            //  })
+            try{
+                const source = doc(db, "todolist", this.projectID);
+               await updateDoc(source, {
+                   complete: !this.project.complete
+                });
                  this.$emit("complete",this.project.id);
-             })
-             .catch((err) => {
-                 console.log(err);
-             })
+            }catch(err){
+                console.log(err.message);
+            }
         },
-        showDetail(){
-            let showeRoute = this.api+this.project.id;
-            fetch(showeRoute,
-                 {
-                    method:"PATCH",
-                    headers:{
-                        "Content-Type" : "application/json"
-                    },
-                    body:JSON.stringify(
-                        {
-                        showDetail: !this.project.showDetail
-                    })
-                }
-             )
-             .then(() => {
+        async showDetail(){
+            // let showeRoute = this.api+this.project.id;
+            // fetch(showeRoute,
+            //      {
+            //         method:"PATCH",
+            //         headers:{
+            //             "Content-Type" : "application/json"
+            //         },
+            //         body:JSON.stringify(
+            //             {
+            //             showDetail: !this.project.showDetail
+            //         })
+            //     }
+            //  )
+            //  .then(() => {
+            //      this.$emit("show",this.project.id);
+            //  })
+            //  .catch((err) => {
+            //      console.log(err);
+            //  })
+
+           try{
+               const source =  doc(db, "todolist", this.projectID);
+               await updateDoc(source, {
+                   showDetail: !this.project.showDetail
+                });
                  this.$emit("show",this.project.id);
-             })
-             .catch((err) => {
-                 console.log(err);
-             })
-        } 
+            }catch(err){
+                console.log(err.message);
+            }
+        }
     }
 }
 </script>

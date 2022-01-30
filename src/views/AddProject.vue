@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import { collection, addDoc  } from "firebase/firestore"; 
+import {db} from '../firebase/config';
 export default {
     data() {
         return{
@@ -17,26 +19,37 @@ export default {
         }
     },
     methods: {
-        addProject(){
-            fetch("http://localhost:3000/projects",{
-                method: "post",
-                headers: {
-                    "content-type":"application/json"
-                },
-                body:JSON.stringify(
-                    {
-                        title : this.title,
-                        detail : this.detail,
-                        complete : false
-                    }
-                )
-            })
-            .then(()=>{
-                this.$router.push("/")
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+        async addProject(){
+            // fetch("http://localhost:3000/projects",{
+            //     method: "post",
+            //     headers: {
+            //         "content-type":"application/json"
+            //     },
+            //     body:JSON.stringify(
+            //         {
+            //             title : this.title,
+            //             detail : this.detail,
+            //             complete : false
+            //         }
+            //     )
+            // })
+            // .then(()=>{
+            //     this.$router.push("/")
+            // })
+            // .catch((err) => {
+            //     console.log(err);
+            // })
+            try{
+                await addDoc(collection(db, "todolist"), {
+                    title : this.title,
+                    detail : this.detail,
+                    complete : false,
+                    showDetail: false,
+                });
+                this.$router.push("/");
+            }catch(err){
+                console.log(err.message);
+            }
         }
     }
 }
@@ -52,12 +65,12 @@ form{
     
 }
 form input{
-  width:70% !important;
+  width:40% !important;
   padding:5px 0;
   font-size:18px;
   border:none;
   border-bottom: 2px solid ;
-  border-image: linear-gradient(90deg,#50a4e9,#1b7c7f) 90;
+  border-image: linear-gradient(90deg,#3d3d3d,#050808) 90;
   border-radius: 10px;
   outline:none;
   margin:20px 0;
@@ -83,7 +96,7 @@ button{
   margin:20px auto;
   outline:none;
   border:none;
-  background:linear-gradient(90deg,#1b737f,#509fe9);
+  background:linear-gradient(90deg,#262727,#3d3d3d);
   z-index: 1100;
   color:rgb(255, 255, 255);
   border-radius:25px;
